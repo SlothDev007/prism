@@ -9,13 +9,13 @@ Prism reads your existing [Hermes Agent](https://github.com/NousResearch/hermes-
 ## Quick Start
 
 ```bash
-git clone https://github.com/caido/prism.git
+git clone https://github.com/SlothDev007/prism.git
 cd prism
 pip install fastapi uvicorn
 python server.py
 ```
 
-Open [http://localhost:8080](http://localhost:8080) — your dashboard is live.
+Open [http://localhost:8081](http://localhost:8081) — your dashboard is live.
 
 ---
 
