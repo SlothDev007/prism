@@ -301,7 +301,16 @@ def index():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import uvicorn
+    import argparse, uvicorn
+
+    parser = argparse.ArgumentParser(description="Prism — AI Cost Dashboard for Hermes Agent")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PRISM_PORT", 8081)),
+                        help="Port to serve on (default: 8081 or $PRISM_PORT)")
+    parser.add_argument("--host", type=str, default="0.0.0.0",
+                        help="Host to bind to (default: 0.0.0.0)")
+    args = parser.parse_args()
+
+    port = args.port
 
     dbs = discover_databases()
     total_sessions = 0
@@ -320,6 +329,6 @@ if __name__ == "__main__":
             print(f"  ✗ {profile}: {e}")
 
     print(f"\n  📊 Discovered {len(dbs)} databases | {total_sessions} sessions | ${total_cost:.2f} total")
-    print(f"  🚀 Serving at http://localhost:8081  (Ctrl+C to stop)\n")
+    print(f"  🚀 Serving at http://localhost:{port}  (Ctrl+C to stop)\n")
 
-    uvicorn.run(app, host="0.0.0.0", port=8081)
+    uvicorn.run(app, host=args.host, port=port)
