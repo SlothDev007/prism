@@ -99,83 +99,105 @@ def _safe_cost(row: dict) -> float:
 # API endpoints
 # ---------------------------------------------------------------------------
 
+# Simple in-memory cache with TTL
+_cache: dict = {}
+CACHE_TTL = 15  # seconds
+
+def _get_cached_or_fetch(key: str, fetch_fn):
+    """Return cached result if fresh, otherwise call fetch_fn and cache it."""
+    now = time.time()
+    cached = _cache.get(key)
+    if cached and (now - cached["at"]) < CACHE_TTL:
+        return cached["data"]
+    data = fetch_fn()
+    _cache[key] = {"data": data, "at": now}
+    return data
+
+def _invalidate_cache():
+    _cache.clear()
+
 @app.get("/api/overview")
-def overview(days: int = Query(default=30, ge=1, le=365)):
-    sessions = _fetch_all_sessions()
-    cutoff = time.time() - (days * 86400)
-    filtered = [s for s in sessions if s["started_at"] >= cutoff]
+def overview(days: int = Query(default=30, ge=1, le=9999)):
+    def _compute():
+        sessions = _fetch_all_sessions()
+        cutoff = time.time() - (days * 86400)
+        filtered = [s for s in sessions if s["started_at"] >= cutoff]
 
-    total_cost = sum(_safe_cost(s) for s in filtered)
-    total_sessions = len(filtered)
-    total_input = sum(s.get("input_tokens") or 0 for s in filtered)
-    total_output = sum(s.get("output_tokens") or 0 for s in filtered)
-    models = sorted(set(s.get("model") for s in filtered if s.get("model")))
-    sources = sorted(set(s.get("source") for s in filtered if s.get("source")))
+        total_cost = sum(_safe_cost(s) for s in filtered)
+        total_sessions = len(filtered)
+        total_input = sum(s.get("input_tokens") or 0 for s in filtered)
+        total_output = sum(s.get("output_tokens") or 0 for s in filtered)
+        models = sorted(set(s.get("model") for s in filtered if s.get("model")))
+        sources = sorted(set(s.get("source") for s in filtered if s.get("source")))
 
-    # Active days
-    active_days = len(set(
-        datetime.fromtimestamp(s["started_at"]).strftime("%Y-%m-%d")
-        for s in filtered
-    ))
+        active_days = len(set(
+            datetime.fromtimestamp(s["started_at"]).strftime("%Y-%m-%d")
+            for s in filtered
+        ))
 
-    # Previous period comparison
-    prev_start = cutoff - (days * 86400)
-    prev = [s for s in sessions if prev_start <= s["started_at"] < cutoff]
-    prev_cost = sum(_safe_cost(s) for s in prev)
-    cost_delta = round(((total_cost - prev_cost) / prev_cost * 100) if prev_cost > 0 else 0, 1)
+        prev_start = cutoff - (days * 86400)
+        prev = [s for s in sessions if prev_start <= s["started_at"] < cutoff]
+        prev_cost = sum(_safe_cost(s) for s in prev)
+        cost_delta = round(((total_cost - prev_cost) / prev_cost * 100) if prev_cost > 0 else 0, 1)
+        avg_cost_per_session = round(total_cost / total_sessions, 4) if total_sessions > 0 else 0
 
-    avg_cost_per_session = round(total_cost / total_sessions, 4) if total_sessions > 0 else 0
+        if filtered:
+            latest = max(s["started_at"] for s in filtered)
+            earliest = min(s["started_at"] for s in filtered)
+            date_range = f"{datetime.fromtimestamp(earliest).strftime('%b %d')} — {datetime.fromtimestamp(latest).strftime('%b %d, %Y')}"
+        else:
+            date_range = "No sessions found"
 
-    # Date range
-    if filtered:
-        latest = max(s["started_at"] for s in filtered)
-        earliest = min(s["started_at"] for s in filtered)
-        date_range = f"{datetime.fromtimestamp(earliest).strftime('%b %d')} — {datetime.fromtimestamp(latest).strftime('%b %d, %Y')}"
-    else:
-        date_range = "No sessions found"
+        return {
+            "total_cost": round(total_cost, 2),
+            "total_sessions": total_sessions,
+            "total_input_tokens": total_input,
+            "total_output_tokens": total_output,
+            "total_tokens": total_input + total_output,
+            "models": models,
+            "sources": sources,
+            "active_days": active_days,
+            "avg_cost_per_session": avg_cost_per_session,
+            "cost_delta_pct": cost_delta,
+            "prev_period_cost": round(prev_cost, 2),
+            "date_range": date_range,
+            "profiles": sorted(set(s["profile"] for s in filtered)),
+            "last_updated": datetime.now().isoformat(),
+        }
 
-    return {
-        "total_cost": round(total_cost, 2),
-        "total_sessions": total_sessions,
-        "total_input_tokens": total_input,
-        "total_output_tokens": total_output,
-        "total_tokens": total_input + total_output,
-        "models": models,
-        "sources": sources,
-        "active_days": active_days,
-        "avg_cost_per_session": avg_cost_per_session,
-        "cost_delta_pct": cost_delta,
-        "prev_period_cost": round(prev_cost, 2),
-        "date_range": date_range,
-        "profiles": sorted(set(s["profile"] for s in filtered)),
-        "last_updated": datetime.now().isoformat(),
-    }
+    return _get_cached_or_fetch(f"overview:{days}", _compute)
 
 @app.get("/api/daily")
-def daily(days: int = Query(default=30, ge=1, le=365)):
-    sessions = _fetch_all_sessions()
-    cutoff = time.time() - (days * 86400)
-    filtered = [s for s in sessions if s["started_at"] >= cutoff]
+def daily(days: int = Query(default=30, ge=1, le=9999)):
+    def _compute():
+        sessions = _fetch_all_sessions()
+        cutoff = time.time() - (days * 86400)
+        filtered = [s for s in sessions if s["started_at"] >= cutoff]
 
-    daily_map: dict[str, float] = {}
-    for s in filtered:
-        day = datetime.fromtimestamp(s["started_at"]).strftime("%Y-%m-%d")
-        daily_map[day] = daily_map.get(day, 0) + _safe_cost(s)
+        daily_map: dict[str, float] = {}
+        for s in filtered:
+            day = datetime.fromtimestamp(s["started_at"]).strftime("%Y-%m-%d")
+            daily_map[day] = daily_map.get(day, 0) + _safe_cost(s)
 
-    # Ensure all dates are present (fill gaps with 0)
-    end = datetime.now().date()
-    start = end - timedelta(days=days - 1)
-    result = []
-    current = start
-    while current <= end:
-        key = current.isoformat()
-        result.append({"date": key, "cost": round(daily_map.get(key, 0), 2)})
-        current += timedelta(days=1)
+        # Ensure all dates are present (fill gaps with 0)
+        end = datetime.now().date()
+        start = end - timedelta(days=days - 1)
+        result = []
+        current = start
+        while current <= end:
+            key = current.isoformat()
+            result.append({"date": key, "cost": round(daily_map.get(key, 0), 2)})
+            current += timedelta(days=1)
 
-    return result
+        return result
+
+    return _get_cached_or_fetch(f"daily:{days}", _compute)
 
 @app.get("/api/models")
 def models():
+    return _get_cached_or_fetch("models", lambda: sorted(_compute_models(), key=lambda x: x["cost"], reverse=True))
+
+def _compute_models():
     sessions = _fetch_all_sessions()
     model_map: dict[str, dict] = {}
     for s in sessions:
@@ -194,13 +216,16 @@ def models():
         m["cache_read"] += s.get("cache_read_tokens") or 0
         m["cache_write"] += s.get("cache_write_tokens") or 0
 
-    return sorted(
-        [{"model": k, **{kk: round(vv, 2) if isinstance(vv, float) else vv for kk, vv in v.items() if kk != "model"}} for k, v in model_map.items()],
-        key=lambda x: x["cost"], reverse=True,
-    )
+    return [
+        {"model": k, **{kk: round(vv, 2) if isinstance(vv, float) else vv for kk, vv in v.items() if kk != "model"}}
+        for k, v in model_map.items()
+    ]
 
 @app.get("/api/sources")
 def sources():
+    return _get_cached_or_fetch("sources", _compute_sources)
+
+def _compute_sources():
     sessions = _fetch_all_sessions()
     src_map: dict[str, dict] = {}
     for s in sessions:

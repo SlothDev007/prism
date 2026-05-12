@@ -8,46 +8,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-card: #ffffff;
-  --text: #1a1a2e;
-  --text-secondary: #6b7280;
-  --border: #e5e7eb;
-  --border-hover: #d1d5db;
-  --accent: #6366f1;
-  --accent-light: #e0e7ff;
-  --accent-dark: #4f46e5;
-  --green: #10b981;
-  --red: #ef4444;
-  --orange: #f59e0b;
+  --bg: #ffffff; --bg-secondary: #f8f9fa; --bg-card: #ffffff;
+  --text: #1a1a2e; --text-secondary: #6b7280;
+  --border: #e5e7eb; --border-hover: #d1d5db;
+  --accent: #6366f1; --accent-light: #e0e7ff;
   --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-lg: 0 4px 14px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
-  --radius: 12px;
-  --transition: 0.2s ease;
+  --radius: 12px; --transition: 0.2s ease;
 }
 [data-theme="dark"] {
-  --bg: #0f1117;
-  --bg-secondary: #1a1a2e;
-  --bg-card: #1e1e32;
-  --text: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --border: #2d2d44;
-  --border-hover: #3d3d5c;
-  --accent: #818cf8;
-  --accent-light: #1e1b4b;
-  --accent-dark: #a5b4fc;
+  --bg: #0f1117; --bg-secondary: #1a1a2e; --bg-card: #1e1e32;
+  --text: #e5e7eb; --text-secondary: #9ca3af;
+  --border: #2d2d44; --border-hover: #3d3d5c;
+  --accent: #818cf8; --accent-light: #1e1b4b;
   --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
   --shadow-lg: 0 4px 14px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  transition: background var(--transition), color var(--transition);
-  min-height: 100vh;
+  background: var(--bg); color: var(--text); line-height: 1.6;
+  transition: background var(--transition), color var(--transition); min-height: 100vh;
 }
 .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
 .header {
@@ -56,114 +37,65 @@ body {
   position: sticky; top: 0; background: var(--bg); z-index: 100;
   transition: background var(--transition), border-color var(--transition);
 }
-.logo {
-  display: flex; align-items: center; gap: 12px;
-  font-size: 1.5rem; font-weight: 700; color: var(--accent);
-}
+.logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
 .logo svg { width: 32px; height: 32px; }
 .updated { font-size: 0.8rem; color: var(--text-secondary); }
 .theme-toggle {
   background: var(--bg-secondary); border: 1px solid var(--border);
-  border-radius: 8px; padding: 8px 12px; cursor: pointer;
-  font-size: 1.1rem; transition: all var(--transition);
-  color: var(--text);
+  border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 1.1rem;
+  transition: all var(--transition); color: var(--text);
 }
 .theme-toggle:hover { border-color: var(--accent); background: var(--accent-light); }
 .header-left { display: flex; align-items: center; gap: 24px; }
 .header-right { display: flex; align-items: center; gap: 16px; }
-.hero {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px; margin: 24px 0 32px;
-}
+.hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
 .card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
   box-shadow: var(--shadow); transition: all var(--transition);
 }
 .card:hover { box-shadow: var(--shadow-lg); border-color: var(--border-hover); }
-.card-label {
-  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px;
-}
-.card-value {
-  font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1.2;
-}
+.card-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px; }
+.card-value { font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1.2; }
 .card-delta { font-size: 0.85rem; margin-top: 8px; font-weight: 500; }
-.card-delta.up { color: var(--red); }
-.card-delta.down { color: var(--green); }
-.card-delta.neutral { color: var(--text-secondary); }
-.charts {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;
-}
+.card-delta.up { color: #ef4444; } .card-delta.down { color: #10b981; } .card-delta.neutral { color: var(--text-secondary); }
+.charts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
 .chart-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
-  transition: all var(--transition);
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow); transition: all var(--transition);
 }
-.chart-card h3 {
-  font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text);
-}
+.chart-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text); }
 .chart-container { position: relative; height: 280px; }
 .table-section {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
-  margin-bottom: 32px; transition: all var(--transition);
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow); margin-bottom: 32px; transition: all var(--transition);
 }
-.table-section h3 {
-  font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text);
-}
+.table-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text); }
 table { width: 100%; font-size: 0.875rem; border-spacing: 0; }
-thead th {
-  padding: 10px 12px; text-align: left; font-weight: 600;
-  color: var(--text-secondary); border-bottom: 2px solid var(--border);
-  text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.04em;
-}
+thead th { padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-secondary); border-bottom: 2px solid var(--border); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.04em; }
 tbody td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text); }
 tbody tr:hover { background: var(--bg-secondary); transition: background var(--transition); }
 .cost { font-weight: 600; color: var(--accent); }
 .tokens { color: var(--text-secondary); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; }
-.model-badge {
-  display: inline-block; background: var(--accent-light); color: var(--accent);
-  padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500;
-}
-.source-badge {
-  display: inline-block; background: var(--bg-secondary); color: var(--text-secondary);
-  padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;
-}
-.date-range {
-  display: flex; align-items: center; gap: 8px;
-}
+.model-badge { display: inline-block; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+.source-badge { display: inline-block; background: var(--bg-secondary); color: var(--text-secondary); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+.date-range { display: flex; align-items: center; gap: 8px; }
 .date-range button {
-  background: var(--bg-secondary); border: 1px solid var(--border);
-  color: var(--text-secondary); padding: 6px 14px; border-radius: 6px;
-  cursor: pointer; font-size: 0.85rem; font-weight: 500;
+  background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-secondary);
+  padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
   transition: all var(--transition);
 }
-.date-range button.active {
-  background: var(--accent); color: white; border-color: var(--accent);
-}
-.date-range button:hover:not(.active) {
-  border-color: var(--accent); color: var(--accent);
-}
-.empty { text-align: center; padding: 48px; color: var(--text-secondary); }
+.date-range button.active { background: var(--accent); color: white; border-color: var(--accent); }
+.date-range button:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+.loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; font-size: 1.2rem; color: var(--text-secondary); }
+.spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 80px 20px; }
 .empty svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.4; }
 .empty p { font-size: 1rem; margin-top: 8px; }
-.footer {
-  text-align: center; padding: 24px 0; color: var(--text-secondary);
-  font-size: 0.8rem; border-top: 1px solid var(--border);
-}
+.empty small { color: var(--text-secondary); margin-top: 8px; display: inline-block; }
+.footer { text-align: center; padding: 24px 0; color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--border); }
 .footer a { color: var(--accent); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
-.loading {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 60px; font-size: 1.2rem; color: var(--text-secondary);
-}
-.spinner {
-  width: 40px; height: 40px; border: 3px solid var(--border);
-  border-top-color: var(--accent); border-radius: 50%;
-  animation: spin 1s linear infinite; margin-bottom: 16px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 768px) {
   .charts { grid-template-columns: 1fr; }
   .hero { grid-template-columns: repeat(2, 1fr); }
@@ -204,57 +136,41 @@ tbody tr:hover { background: var(--bg-secondary); transition: background var(--t
 
   <div id="dashboard" style="display:none;">
     <div class="hero" id="heroCards"></div>
-
     <div class="charts">
-      <div class="chart-card">
-        <h3>Daily Spend</h3>
-        <div class="chart-container"><canvas id="dailyChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Spend by Model</h3>
-        <div class="chart-container"><canvas id="modelChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Spend by Platform</h3>
-        <div class="chart-container"><canvas id="sourceChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Token Breakdown</h3>
-        <div class="chart-container"><canvas id="tokenChart"></canvas></div>
-      </div>
+      <div class="chart-card"><h3>Daily Spend</h3><div class="chart-container"><canvas id="dailyChart"></canvas></div></div>
+      <div class="chart-card"><h3>Spend by Model</h3><div class="chart-container"><canvas id="modelChart"></canvas></div></div>
+      <div class="chart-card"><h3>Spend by Platform</h3><div class="chart-container"><canvas id="sourceChart"></canvas></div></div>
+      <div class="chart-card"><h3>Token Breakdown</h3><div class="chart-container"><canvas id="tokenChart"></canvas></div></div>
     </div>
-
     <div class="table-section">
       <h3>Recent Sessions</h3>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead><tr>
-            <th>Date</th><th>Model</th><th>Platform</th>
-            <th>Session</th><th>Input</th><th>Output</th>
-            <th>Duration</th><th>Cost</th>
-          </tr></thead>
-          <tbody id="recentBody"></tbody>
-        </table>
-      </div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Date</th><th>Model</th><th>Platform</th><th>Session</th><th>Input</th><th>Output</th><th>Duration</th><th>Cost</th></tr></thead>
+        <tbody id="recentBody"></tbody>
+      </table></div>
     </div>
-
     <div class="table-section">
       <h3>Most Expensive Sessions</h3>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead><tr>
-            <th>Date</th><th>Model</th><th>Platform</th><th>Session</th>
-            <th>Input</th><th>Duration</th><th>Cost</th>
-          </tr></thead>
-          <tbody id="expensiveBody"></tbody>
-        </table>
-      </div>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Date</th><th>Model</th><th>Platform</th><th>Session</th><th>Input</th><th>Duration</th><th>Cost</th></tr></thead>
+        <tbody id="expensiveBody"></tbody>
+      </table></div>
     </div>
+  </div>
+
+  <div id="emptyState" style="display:none;" class="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+    <p>No sessions found yet.</p>
+    <small>Start using Hermes Agent and your usage will appear here.</small>
   </div>
 </div>
 
 <footer class="footer">
-  <a href="https://github.com/caido/prism">Prism</a> — AI Cost Dashboard for <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> · Built by Caido
+  <a href="https://github.com/SlothDev007/prism">Prism</a> — AI Cost Dashboard for <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> · Built by Caido
 </footer>
 
 <script>
@@ -269,14 +185,13 @@ function toggleTheme() {
 }
 
 // ─── State ──────────────────────────────────────────────────────────────────
-let days = 30;
-let charts = {};
-let apiDaily = null, apiModels = null, apiSources = null;
+var days = 30, charts = {};
+var apiDaily = null, apiModels = null, apiSources = null;
 
 // ─── Formatters ─────────────────────────────────────────────────────────────
 function fmtDur(s) {
   if (!s || s < 0) return '—';
-  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
   if (h > 0) return h + 'h ' + m + 'm';
   return m + 'm ' + Math.floor(s % 60) + 's';
 }
@@ -289,157 +204,123 @@ function fmtTok(n) {
 function fmtCost(n) { return '$' + n.toFixed(n >= 1 ? 2 : 4); }
 function fmtDate(iso) {
   if (!iso) return '—';
-  const d = new Date(iso);
+  var d = new Date(iso);
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
     d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 function modelShort(m) { return (m || '').split('/').pop() || 'unknown'; }
 
 // ─── API Fetch ──────────────────────────────────────────────────────────────
-async function fetchJSON(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  return res.json();
-}
-
-// ─── Render Hero Cards ──────────────────────────────────────────────────────
-function renderHero(d) {
-  document.getElementById('updated').textContent = 'Updated ' + new Date(d.last_updated).toLocaleTimeString();
-  const cls = d.cost_delta_pct > 0 ? 'up' : d.cost_delta_pct < 0 ? 'down' : 'neutral';
-  const txt = d.cost_delta_pct === 0 && d.prev_period_cost === 0
-    ? 'No previous data'
-    : d.cost_delta_pct === 0
-      ? 'vs previous period'
-      : (d.cost_delta_pct > 0 ? '↑' : '↓') + ' ' + Math.abs(d.cost_delta_pct) + '% vs prev';
-    if (d.total_sessions === 0) {
-      document.getElementById('loading').innerHTML =
-        '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>' +
-        '<p>No sessions found yet.</p><p><small style="color:var(--text-secondary);margin-top:8px;display:inline-block">Start using Hermes Agent and your usage will appear here.</small></p></div>';
-      return;
-    }
-  document.getElementById('heroCards').innerHTML =
-    '<div class="card"><div class="card-label">Total Cost</div><div class="card-value">' + fmtCost(d.total_cost) + '</div><div class="card-delta ' + cls + '">' + txt + '</div></div>' +
-    '<div class="card"><div class="card-label">Sessions</div><div class="card-value">' + d.total_sessions.toLocaleString() + '</div><div class="card-delta neutral">' + d.active_days + ' active days</div></div>' +
-    '<div class="card"><div class="card-label">Total Tokens</div><div class="card-value">' + fmtTok(d.total_tokens) + '</div><div class="card-delta neutral">' + fmtTok(d.total_output_tokens) + ' output</div></div>' +
-    '<div class="card"><div class="card-label">Avg Cost / Session</div><div class="card-value">' + fmtCost(d.avg_cost_per_session) + '</div><div class="card-delta neutral">' + d.models.length + ' model' + (d.models.length !== 1 ? 's' : '') + '</div></div>';
-}
-
-// ─── Chart helpers ──────────────────────────────────────────────────────────
-function safeDestroy(key) {
-  try {
-    if (charts[key] && typeof charts[key].destroy === 'function') {
-      charts[key].destroy();
-      charts[key] = null;
-    }
-  } catch (_) {}
-}
-
-function getAccent(alpha) {
-  const base = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-  return base + (alpha || '');
+function fetchJSON(url) {
+  return fetch(url).then(function(res) {
+    if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+    return res.json();
+  });
 }
 
 // ─── Charts ─────────────────────────────────────────────────────────────────
-function renderDailyChart(data, _force) {
-  const ctx = document.getElementById('dailyChart');
+function safeDestroy(key) {
+  try { if (charts[key] && typeof charts[key].destroy === 'function') { charts[key].destroy(); charts[key] = null; } } catch (_) {}
+}
+
+function chartColors() {
+  var theme = document.documentElement.getAttribute('data-theme');
+  if (theme === 'dark') {
+    return { accent: '#818cf8', input: '#818cf8', output: '#f59e0b',
+      grid: 'rgba(255,255,255,0.08)', legend: '#9ca3af',
+      palette: ['#818cf8','#fbbf24','#34d399','#f87171','#a78bfa','#f472b6','#22d3ee','#4ade80'],
+      source: ['#818cf8','#34d399','#fbbf24','#f87171'] };
+  }
+  return { accent: '#6366f1', input: '#6366f1', output: '#f59e0b',
+    grid: 'rgba(128,128,128,0.1)', legend: '#6b7280',
+    palette: ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16'],
+    source: ['#6366f1','#10b981','#f59e0b','#ef4444'] };
+}
+
+function renderDailyChart(data) {
   safeDestroy('daily');
-  charts.daily = new Chart(ctx, {
+  var c = chartColors();
+  charts.daily = new Chart(document.getElementById('dailyChart'), {
     type: 'bar',
-    data: {
-      labels: data.map(d => d.date.substring(5)),
-      datasets: [{
-        data: data.map(d => d.cost),
-        backgroundColor: getAccent('33'),
-        borderColor: getAccent(),
-        borderWidth: 1, borderRadius: 4,
-      }]
+    data: { labels: data.map(function(d) { return d.date.substring(5); }),
+      datasets: [{ data: data.map(function(d) { return d.cost; }),
+        backgroundColor: c.accent + '33', borderColor: c.accent, borderWidth: 1, borderRadius: 4 }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
+    options: { responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
-        y: { ticks: { callback: v => '$' + v }, grid: { color: 'rgba(128,128,128,0.1)' } }
+        x: { ticks: { maxTicksLimit: 10, maxRotation: 0, color: c.legend }, grid: { display: false } },
+        y: { ticks: { callback: function(v) { return '$' + v; }, color: c.legend }, grid: { color: c.grid } }
       }
     }
   });
 }
 
 function renderModelChart(data) {
-  const ctx = document.getElementById('modelChart');
   safeDestroy('model');
-  const colors = ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16'];
-  charts.model = new Chart(ctx, {
+  var c = chartColors();
+  charts.model = new Chart(document.getElementById('modelChart'), {
     type: 'doughnut',
-    data: {
-      labels: data.map(m => modelShort(m.model)),
-      datasets: [{ data: data.map(m => m.cost), backgroundColor: colors, borderWidth: 0 }]
+    data: { labels: data.map(function(m) { return modelShort(m.model); }),
+      datasets: [{ data: data.map(function(m) { return m.cost; }),
+        backgroundColor: c.palette.slice(0, data.length), borderWidth: 0 }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { padding: 10, usePointStyle: true, font: { size: 12 } } },
-        tooltip: { callbacks: { label: c => c.label + ': ' + fmtCost(c.raw) } }
-      },
-      cutout: '60%',
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { padding: 10, usePointStyle: true, font: { size: 12 }, color: c.legend } },
+        tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + fmtCost(ctx.raw); } } } },
+      cutout: '60%'
     }
   });
 }
 
 function renderSourceChart(data) {
-  const ctx = document.getElementById('sourceChart');
   safeDestroy('source');
-  const colors = ['#6366f1','#10b981','#f59e0b','#ef4444'];
-  charts.source = new Chart(ctx, {
+  var c = chartColors();
+  charts.source = new Chart(document.getElementById('sourceChart'), {
     type: 'doughnut',
-    data: {
-      labels: data.map(s => (s.source || 'unknown') + ' (' + s.sessions + ')'),
-      datasets: [{ data: data.map(s => s.cost), backgroundColor: colors.slice(0, data.length), borderWidth: 0 }]
+    data: { labels: data.map(function(s) { return (s.source || 'unknown') + ' (' + s.sessions + ')'; }),
+      datasets: [{ data: data.map(function(s) { return s.cost; }),
+        backgroundColor: c.source.slice(0, data.length), borderWidth: 0 }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { padding: 10, usePointStyle: true, font: { size: 12 } } },
-        tooltip: { callbacks: { label: c => c.label + ': ' + fmtCost(c.raw) } }
-      },
-      cutout: '60%',
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { padding: 10, usePointStyle: true, font: { size: 12 }, color: c.legend } },
+        tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + fmtCost(ctx.raw); } } } },
+      cutout: '60%'
     }
   });
 }
 
 function renderTokenChart(data) {
-  const ctx = document.getElementById('tokenChart');
   safeDestroy('token');
-  charts.token = new Chart(ctx, {
+  var c = chartColors();
+  charts.token = new Chart(document.getElementById('tokenChart'), {
     type: 'bar',
     data: {
-      labels: data.map(m => modelShort(m.model)),
+      labels: data.map(function(m) { return modelShort(m.model); }),
       datasets: [
-        { label: 'Input', data: data.map(m => m.input_tokens), backgroundColor: '#6366f1', borderRadius: 4 },
-        { label: 'Output', data: data.map(m => m.output_tokens), backgroundColor: '#f59e0b', borderRadius: 4 },
+        { label: 'Input', data: data.map(function(m) { return m.input_tokens; }), backgroundColor: c.input, borderRadius: 4 },
+        { label: 'Output', data: data.map(function(m) { return m.output_tokens; }), backgroundColor: c.output, borderRadius: 4 },
       ]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: { legend: { position: 'top' } },
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { position: 'top', labels: { color: c.legend } } },
       scales: {
-        x: { ticks: { callback: v => fmtTok(v) }, stacked: true },
-        y: { stacked: true, grid: { display: false } }
+        x: { ticks: { callback: function(v) { return fmtTok(v); }, color: c.legend }, stacked: true, grid: { color: c.grid } },
+        y: { stacked: true, grid: { display: false }, ticks: { color: c.legend } }
       }
     }
   });
 }
 
 function redrawCharts() {
-  if (apiDaily) renderDailyChart(apiDaily, true);
-  if (apiModels) renderModelChart(apiModels);
+  if (apiDaily) renderDailyChart(apiDaily);
+  if (apiModels) { renderModelChart(apiModels); renderTokenChart(apiModels); }
   if (apiSources) renderSourceChart(apiSources);
-  if (apiModels) renderTokenChart(apiModels);
 }
 
 // ─── Tables ─────────────────────────────────────────────────────────────────
 function renderTable(data) {
-  document.getElementById('recentBody').innerHTML = data.map(function(s) {
+  var html = data.map(function(s) {
     return '<tr>' +
       '<td>' + fmtDate(s.started_at) + '</td>' +
       '<td><span class="model-badge">' + modelShort(s.model) + '</span></td>' +
@@ -448,13 +329,13 @@ function renderTable(data) {
       '<td class="tokens">' + fmtTok(s.input_tokens) + '</td>' +
       '<td class="tokens">' + fmtTok(s.output_tokens) + '</td>' +
       '<td>' + fmtDur(s.duration_seconds) + '</td>' +
-      '<td class="cost">' + fmtCost(s.cost) + '</td>' +
-    '</tr>';
+      '<td class="cost">' + fmtCost(s.cost) + '</td></tr>';
   }).join('');
+  document.getElementById('recentBody').innerHTML = html;
 }
 
 function renderExpensive(data) {
-  document.getElementById('expensiveBody').innerHTML = data.map(function(s) {
+  var html = data.map(function(s) {
     return '<tr>' +
       '<td>' + fmtDate(s.started_at) + '</td>' +
       '<td><span class="model-badge">' + modelShort(s.model) + '</span></td>' +
@@ -462,9 +343,9 @@ function renderExpensive(data) {
       '<td class="session-id" title="' + (s.title || s.id) + '">' + escapeHtml((s.title || s.id).substring(0, 40)) + '</td>' +
       '<td class="tokens">' + fmtTok(s.input_tokens) + '</td>' +
       '<td>' + fmtDur(s.duration_seconds) + '</td>' +
-      '<td class="cost">' + fmtCost(s.cost) + '</td>' +
-    '</tr>';
+      '<td class="cost">' + fmtCost(s.cost) + '</td></tr>';
   }).join('');
+  document.getElementById('expensiveBody').innerHTML = html;
 }
 
 function escapeHtml(s) {
@@ -472,33 +353,60 @@ function escapeHtml(s) {
 }
 
 // ─── Main load ──────────────────────────────────────────────────────────────
-async function loadDashboard() {
-  try {
-    var overview = await fetchJSON('/api/overview?days=' + days);
-    var daily    = await fetchJSON('/api/daily?days=' + days);
-    var models   = await fetchJSON('/api/models');
-    var sources  = await fetchJSON('/api/sources');
-    var sessions = await fetchJSON('/api/sessions?limit=50');
-    var expensive = await fetchJSON('/api/expensive?limit=15');
-
+function loadDashboard() {
+  Promise.all([
+    fetchJSON('/api/overview?days=' + days),
+    fetchJSON('/api/daily?days=' + days),
+    fetchJSON('/api/models'),
+    fetchJSON('/api/sources'),
+    fetchJSON('/api/sessions?limit=50'),
+    fetchJSON('/api/expensive?limit=15')
+  ]).then(function(results) {
+    var overview = results[0], daily = results[1], models = results[2], sources = results[3], sessions = results[4], expensive = results[5];
     apiDaily = daily; apiModels = models; apiSources = sources;
 
-    renderHero(overview);
+    document.getElementById('updated').textContent = 'Updated ' + new Date(overview.last_updated).toLocaleTimeString();
+
+    // Empty state
+    if (overview.total_sessions === 0) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('emptyState').style.display = '';
+      return;
+    }
+
+    // Hero cards
+    var cls = overview.cost_delta_pct > 0 ? 'up' : overview.cost_delta_pct < 0 ? 'down' : 'neutral';
+    var txt = overview.cost_delta_pct === 0 && overview.prev_period_cost === 0
+      ? 'No previous data'
+      : overview.cost_delta_pct === 0
+        ? 'vs previous period'
+        : (overview.cost_delta_pct > 0 ? '↑' : '↓') + ' ' + Math.abs(overview.cost_delta_pct) + '% vs prev';
+
+    document.getElementById('heroCards').innerHTML =
+      '<div class="card"><div class="card-label">Total Cost</div><div class="card-value">' + fmtCost(overview.total_cost) + '</div><div class="card-delta ' + cls + '">' + txt + '</div></div>' +
+      '<div class="card"><div class="card-label">Sessions</div><div class="card-value">' + overview.total_sessions.toLocaleString() + '</div><div class="card-delta neutral">' + overview.active_days + ' active days</div></div>' +
+      '<div class="card"><div class="card-label">Total Tokens</div><div class="card-value">' + fmtTok(overview.total_tokens) + '</div><div class="card-delta neutral">' + fmtTok(overview.total_output_tokens) + ' output</div></div>' +
+      '<div class="card"><div class="card-label">Avg Cost / Session</div><div class="card-value">' + fmtCost(overview.avg_cost_per_session) + '</div><div class="card-delta neutral">' + overview.models.length + ' model' + (overview.models.length !== 1 ? 's' : '') + '</div></div>';
+
+    // Charts
     renderDailyChart(daily);
     renderModelChart(models);
     renderSourceChart(sources);
     renderTokenChart(models);
+
+    // Tables
     renderTable(sessions.sessions);
     renderExpensive(expensive);
 
     document.getElementById('loading').style.display = 'none';
     document.getElementById('dashboard').style.display = '';
-  } catch (err) {
+  }).catch(function(err) {
     document.getElementById('loading').innerHTML =
       '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
-      '<p>Couldn\u2019t connect to Prism server.<br><small>Make sure server.py is running.</small></p><p><small style="color:var(--text-secondary);margin-top:8px;display:inline-block">' + escapeHtml(err.message) + '</small></p></div>';
+      '<p>Couldn\u2019t connect to Prism server.</p><p><small>Make sure server.py is running.</small></p>' +
+      '<p><small>' + escapeHtml(err.message) + '</small></p></div>';
     console.error('Dashboard load error:', err);
-  }
+  });
 }
 
 // ─── Init ───────────────────────────────────────────────────────────────────
