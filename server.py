@@ -281,6 +281,7 @@ def expensive(limit: int = Query(default=20, ge=1, le=100)):
         result.append({
             "id": s["id"],
             "profile": s["profile"],
+            "source": s.get("source", "unknown"),
             "model": s.get("model", "unknown"),
             "title": s.get("title", ""),
             "started_at": datetime.fromtimestamp(s["started_at"]).isoformat(),
