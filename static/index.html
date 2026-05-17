@@ -15,6 +15,9 @@
   --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-lg: 0 4px 14px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
   --radius: 12px; --transition: 0.2s ease;
+  --danger: #ef4444; --danger-light: #fee2e2;
+  --success: #10b981; --success-light: #d1fae5;
+  --warning: #f59e0b; --warning-light: #fef3c7;
 }
 [data-theme="dark"] {
   --bg: #0f1117; --bg-secondary: #1a1a2e; --bg-card: #1e1e32;
@@ -23,6 +26,9 @@
   --accent: #818cf8; --accent-light: #1e1b4b;
   --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
   --shadow-lg: 0 4px 14px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2);
+  --danger: #f87171; --danger-light: #451a1a;
+  --success: #34d399; --success-light: #1a3a2a;
+  --warning: #fbbf24; --warning-light: #3a3018;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -48,6 +54,19 @@ body {
 .theme-toggle:hover { border-color: var(--accent); background: var(--accent-light); }
 .header-left { display: flex; align-items: center; gap: 24px; }
 .header-right { display: flex; align-items: center; gap: 16px; }
+
+/* ─── Tabs ─────────────────────────────────────────────────────────── */
+.tabs { display: flex; gap: 4px; margin-top: 16px; }
+.tab-btn {
+  background: transparent; border: 1px solid transparent; color: var(--text-secondary);
+  padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500;
+  transition: all var(--transition);
+}
+.tab-btn:hover { background: var(--bg-secondary); color: var(--text); }
+.tab-btn.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
 .hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0 32px; }
 .card {
   background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
@@ -57,8 +76,9 @@ body {
 .card-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px; }
 .card-value { font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1.2; }
 .card-delta { font-size: 0.85rem; margin-top: 8px; font-weight: 500; }
-.card-delta.up { color: #ef4444; } .card-delta.down { color: #10b981; } .card-delta.neutral { color: var(--text-secondary); }
+.card-delta.up { color: var(--danger); } .card-delta.down { color: var(--success); } .card-delta.neutral { color: var(--text-secondary); }
 .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+.charts.single { grid-template-columns: 1fr; }
 .chart-card {
   background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
   box-shadow: var(--shadow); transition: all var(--transition);
@@ -78,6 +98,8 @@ tbody tr:hover { background: var(--bg-secondary); transition: background var(--t
 .tokens { color: var(--text-secondary); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; }
 .model-badge { display: inline-block; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
 .source-badge { display: inline-block; background: var(--bg-secondary); color: var(--text-secondary); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+.stuck-badge { display: inline-block; background: var(--danger-light); color: var(--danger); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.cache-badge { display: inline-block; background: var(--success-light); color: var(--success); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
 .date-range { display: flex; align-items: center; gap: 8px; }
 .date-range button {
   background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-secondary);
@@ -100,6 +122,7 @@ tbody tr:hover { background: var(--bg-secondary); transition: background var(--t
   .charts { grid-template-columns: 1fr; }
   .hero { grid-template-columns: repeat(2, 1fr); }
   .header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .tabs { flex-wrap: wrap; }
   table { display: block; overflow-x: auto; }
 }
 </style>
@@ -128,12 +151,17 @@ tbody tr:hover { background: var(--bg-secondary); transition: background var(--t
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌓</button>
     </div>
   </header>
+  <nav class="tabs" id="tabNav">
+    <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+    <button class="tab-btn" data-tab="efficiency">Efficiency</button>
+    <button class="tab-btn" data-tab="context">Context</button>
+  </nav>
+</div>
 
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-    Loading dashboard…
-  </div>
-
+<!-- ═══════════════ TAB 1: DASHBOARD ═══════════════ -->
+<div class="tab-content active" id="tab-dashboard">
+<div class="container">
+  <div id="loading" class="loading"><div class="spinner"></div>Loading dashboard…</div>
   <div id="dashboard" style="display:none;">
     <div class="hero" id="heroCards"></div>
     <div class="charts">
@@ -157,7 +185,6 @@ tbody tr:hover { background: var(--bg-secondary); transition: background var(--t
       </table></div>
     </div>
   </div>
-
   <div id="emptyState" style="display:none;" class="empty">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
       <circle cx="12" cy="12" r="10"/>
@@ -168,27 +195,115 @@ tbody tr:hover { background: var(--bg-secondary); transition: background var(--t
     <small>Start using Hermes Agent and your usage will appear here.</small>
   </div>
 </div>
+</div>
+
+<!-- ═══════════════ TAB 2: EFFICIENCY ═══════════════ -->
+<div class="tab-content" id="tab-efficiency">
+<div class="container">
+  <div id="effLoading" class="loading"><div class="spinner"></div>Loading efficiency data…</div>
+  <div id="efficiency" style="display:none;">
+    <div class="hero" id="effCards"></div>
+    <div class="charts single">
+      <div class="chart-card"><h3>Cache Utilization by Model</h3><div class="chart-container"><canvas id="cacheChart"></canvas></div></div>
+    </div>
+    <div class="table-section" id="inefficientSection">
+      <h3>Inefficient Sessions</h3>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Session</th><th>Model</th><th>Messages</th><th>Cost</th><th>Duration</th><th>Status</th></tr></thead>
+        <tbody id="inefficientBody"></tbody>
+      </table></div>
+    </div>
+    <div class="table-section" id="stuckSection">
+      <h3>Stuck Sessions</h3>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Session</th><th>Model</th><th>Messages</th><th>Cost</th><th>Duration</th><th>Reason</th></tr></thead>
+        <tbody id="stuckBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+  <div id="effEmpty" style="display:none;" class="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/>
+    </svg>
+    <p>No efficiency issues detected.</p>
+    <small>All sessions are running normally.</small>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 3: CONTEXT ═══════════════ -->
+<div class="tab-content" id="tab-context">
+<div class="container">
+  <div id="ctxLoading" class="loading"><div class="spinner"></div>Loading context data…</div>
+  <div id="contextPage" style="display:none;">
+    <div class="hero" id="ctxCards"></div>
+    <div class="charts">
+      <div class="chart-card"><h3>Message Count Distribution</h3><div class="chart-container"><canvas id="msgDistChart"></canvas></div></div>
+      <div class="chart-card"><h3>Context Pressure by Model</h3><div class="chart-container"><canvas id="pressureChart"></canvas></div></div>
+    </div>
+    <div class="charts single">
+      <div class="chart-card"><h3>End Reasons</h3><div class="chart-container"><canvas id="endReasonChart"></canvas></div></div>
+    </div>
+    <div class="table-section">
+      <h3>Longest Sessions</h3>
+      <div style="overflow-x:auto;"><table>
+        <thead><tr><th>Session</th><th>Model</th><th>Messages</th><th>Input Tokens</th><th>Output Tokens</th><th>Duration</th><th>Cost</th><th>End</th></tr></thead>
+        <tbody id="longestBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+  <div id="ctxEmpty" style="display:none;" class="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+    <p>No context data available yet.</p>
+    <small>Start using Hermes Agent and context metrics will appear here.</small>
+  </div>
+</div>
+</div>
 
 <footer class="footer">
   <a href="https://github.com/SlothDev007/prism">Prism</a> — AI Cost Dashboard for <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> · Built by Caido
 </footer>
 
 <script>
-// ─── Theme ──────────────────────────────────────────────────────────────────
-const stored = localStorage.getItem('prism-theme') || 'light';
-document.documentElement.setAttribute('data-theme', stored);
+// ─── Theme ──────────────────────────────────────────────────────────
+(function() {
+  var stored = localStorage.getItem('prism-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', stored);
+})();
 function toggleTheme() {
-  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('prism-theme', next);
-  redrawCharts();
+  redrawAllCharts();
 }
 
-// ─── State ──────────────────────────────────────────────────────────────────
+// ─── Tabs ───────────────────────────────────────────────────────────
+var currentTab = 'dashboard';
+var effLoaded = false, ctxLoaded = false;
+
+document.querySelectorAll('#tabNav .tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var target = btn.dataset.tab;
+    if (target === currentTab) return;
+    document.querySelectorAll('#tabNav .tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + currentTab).classList.remove('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    currentTab = target;
+    if (target === 'efficiency' && !effLoaded) loadEfficiency();
+    if (target === 'context' && !ctxLoaded) loadContext();
+  });
+});
+
+// ─── State ──────────────────────────────────────────────────────────
 var days = 30, charts = {};
 var apiDaily = null, apiModels = null, apiSources = null;
 
-// ─── Formatters ─────────────────────────────────────────────────────────────
+// ─── Formatters ─────────────────────────────────────────────────────
 function fmtDur(s) {
   if (!s || s < 0) return '—';
   var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
@@ -196,12 +311,13 @@ function fmtDur(s) {
   return m + 'm ' + Math.floor(s % 60) + 's';
 }
 function fmtTok(n) {
-  if (!n) return '—';
+  if (n == null || isNaN(n)) return '—';
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
   if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
   return n.toLocaleString();
 }
-function fmtCost(n) { return '$' + n.toFixed(n >= 1 ? 2 : 4); }
+function fmtCost(n) { return '$' + (n ? n.toFixed(n >= 1 ? 2 : 4) : '0'); }
+function fmtPct(n) { return (n ? (n * 100).toFixed(1) : '0') + '%'; }
 function fmtDate(iso) {
   if (!iso) return '—';
   var d = new Date(iso);
@@ -209,8 +325,11 @@ function fmtDate(iso) {
     d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 function modelShort(m) { return (m || '').split('/').pop() || 'unknown'; }
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
-// ─── API Fetch ──────────────────────────────────────────────────────────────
+// ─── API Fetch ──────────────────────────────────────────────────────
 function fetchJSON(url) {
   return fetch(url).then(function(res) {
     if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
@@ -218,7 +337,7 @@ function fetchJSON(url) {
   });
 }
 
-// ─── Charts ─────────────────────────────────────────────────────────────────
+// ─── Charts ─────────────────────────────────────────────────────────
 function safeDestroy(key) {
   try { if (charts[key] && typeof charts[key].destroy === 'function') { charts[key].destroy(); charts[key] = null; } } catch (_) {}
 }
@@ -226,15 +345,21 @@ function safeDestroy(key) {
 function chartColors() {
   var theme = document.documentElement.getAttribute('data-theme');
   if (theme === 'dark') {
-    return { accent: '#818cf8', input: '#818cf8', output: '#f59e0b',
+    return {
+      accent: '#818cf8', input: '#818cf8', output: '#f59e0b',
       grid: 'rgba(255,255,255,0.08)', legend: '#9ca3af',
       palette: ['#818cf8','#fbbf24','#34d399','#f87171','#a78bfa','#f472b6','#22d3ee','#4ade80'],
-      source: ['#818cf8','#34d399','#fbbf24','#f87171'] };
+      source: ['#818cf8','#34d399','#fbbf24','#f87171'],
+      danger: '#f87171', success: '#34d399', warning: '#fbbf24'
+    };
   }
-  return { accent: '#6366f1', input: '#6366f1', output: '#f59e0b',
+  return {
+    accent: '#6366f1', input: '#6366f1', output: '#f59e0b',
     grid: 'rgba(128,128,128,0.1)', legend: '#6b7280',
     palette: ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16'],
-    source: ['#6366f1','#10b981','#f59e0b','#ef4444'] };
+    source: ['#6366f1','#10b981','#f59e0b','#ef4444'],
+    danger: '#ef4444', success: '#10b981', warning: '#f59e0b'
+  };
 }
 
 function renderDailyChart(data) {
@@ -312,13 +437,104 @@ function renderTokenChart(data) {
   });
 }
 
-function redrawCharts() {
+function renderCacheChart(data) {
+  safeDestroy('cache');
+  var c = chartColors();
+  charts.cache = new Chart(document.getElementById('cacheChart'), {
+    type: 'bar',
+    data: {
+      labels: data.map(function(d) { return modelShort(d.model); }),
+      datasets: [
+        { label: 'Cache Read', data: data.map(function(d) { return d.cache_read_tokens || 0; }), backgroundColor: c.input + '33', borderColor: c.input, borderWidth: 1, borderRadius: 4 },
+        { label: 'Cache Write', data: data.map(function(d) { return d.cache_write_tokens || 0; }), backgroundColor: c.output + '33', borderColor: c.output, borderWidth: 1, borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { color: c.legend } } },
+      scales: {
+        x: { ticks: { color: c.legend, maxRotation: 30 }, grid: { display: false } },
+        y: { ticks: { callback: function(v) { return fmtTok(v); }, color: c.legend }, grid: { color: c.grid } }
+      }
+    }
+  });
+}
+
+function renderMsgDistChart(data) {
+  safeDestroy('msgDist');
+  var c = chartColors();
+  var labels = data.map(function(d) { return d.bucket; });
+  var values = data.map(function(d) { return d.count; });
+  charts.msgDist = new Chart(document.getElementById('msgDistChart'), {
+    type: 'bar',
+    data: { labels: labels,
+      datasets: [{ label: 'Sessions', data: values,
+        backgroundColor: c.accent + '44', borderColor: c.accent, borderWidth: 1, borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: c.legend, maxRotation: 0 }, grid: { display: false } },
+        y: { ticks: { color: c.legend }, grid: { color: c.grid } }
+      }
+    }
+  });
+}
+
+function renderPressureChart(data) {
+  safeDestroy('pressure');
+  var c = chartColors();
+  var labels = data.map(function(d) { return modelShort(d.model); });
+  charts.pressure = new Chart(document.getElementById('pressureChart'), {
+    type: 'bar',
+    data: { labels: labels,
+      datasets: [
+        { label: 'Avg Messages / Session', data: data.map(function(d) { return d.avg_messages_per_session || 0; }), backgroundColor: c.accent + '44', borderColor: c.accent, borderWidth: 1, borderRadius: 4, yAxisID: 'y' },
+        { label: 'Compression/Reset Rate', data: data.map(function(d) { return d.compression_reset_rate || 0; }), backgroundColor: c.warning + '44', borderColor: c.warning, borderWidth: 1, borderRadius: 4, yAxisID: 'y1' }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { color: c.legend } } },
+      scales: {
+        x: { ticks: { color: c.legend, maxRotation: 30 }, grid: { display: false } },
+        y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Messages', color: c.legend },
+          ticks: { color: c.legend }, grid: { color: c.grid } },
+        y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Rate', color: c.legend },
+          ticks: { color: c.legend }, grid: { color: c.grid } }
+      }
+    }
+  });
+}
+
+function renderEndReasonChart(data) {
+  safeDestroy('endReason');
+  var c = chartColors();
+  charts.endReason = new Chart(document.getElementById('endReasonChart'), {
+    type: 'doughnut',
+    data: { labels: data.map(function(d) { return d.reason || 'unknown'; }),
+      datasets: [{ data: data.map(function(d) { return d.count; }),
+        backgroundColor: c.palette.slice(0, data.length), borderWidth: 0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { padding: 10, usePointStyle: true, font: { size: 12 }, color: c.legend } } },
+      cutout: '55%'
+    }
+  });
+}
+
+function redrawAllCharts() {
   if (apiDaily) renderDailyChart(apiDaily);
   if (apiModels) { renderModelChart(apiModels); renderTokenChart(apiModels); }
   if (apiSources) renderSourceChart(apiSources);
+  // Redraw efficiency + context charts if data available
+  if (apiEfficiency && apiEfficiency.cache_inefficiency) renderCacheChart(apiEfficiency.cache_inefficiency);
+  if (apiContext) {
+    if (apiContext.message_count_distribution) renderMsgDistChart(apiContext.message_count_distribution);
+    if (apiContext.context_pressure_by_model) renderPressureChart(apiContext.context_pressure_by_model);
+    if (apiContext.end_reason_distribution) renderEndReasonChart(apiContext.end_reason_distribution);
+  }
 }
 
-// ─── Tables ─────────────────────────────────────────────────────────────────
+// ─── Tables ─────────────────────────────────────────────────────────
 function renderTable(data) {
   var html = data.map(function(s) {
     return '<tr>' +
@@ -348,11 +564,59 @@ function renderExpensive(data) {
   document.getElementById('expensiveBody').innerHTML = html;
 }
 
-function escapeHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+function renderInefficient(data) {
+  if (!data || data.length === 0) {
+    document.getElementById('inefficientSection').style.display = 'none';
+    return;
+  }
+  document.getElementById('inefficientSection').style.display = '';
+  var html = data.map(function(s) {
+    return '<tr>' +
+      '<td class="session-id" title="' + (s.title || s.id) + '">' + escapeHtml((s.title || s.id).substring(0, 40)) + '</td>' +
+      '<td><span class="model-badge">' + modelShort(s.model) + '</span></td>' +
+      '<td>' + (s.message_count || s.messages ? (s.message_count || s.messages) : '—') + '</td>' +
+      '<td class="cost">' + fmtCost(s.cost) + '</td>' +
+      '<td>' + fmtDur(s.duration_seconds) + '</td>' +
+      '<td><span class="stuck-badge">Inefficient</span></td></tr>';
+  }).join('');
+  document.getElementById('inefficientBody').innerHTML = html;
 }
 
-// ─── Main load ──────────────────────────────────────────────────────────────
+function renderStuck(data) {
+  if (!data || data.length === 0) {
+    document.getElementById('stuckSection').style.display = 'none';
+    return;
+  }
+  document.getElementById('stuckSection').style.display = '';
+  var html = data.map(function(s) {
+    return '<tr>' +
+      '<td class="session-id" title="' + (s.title || s.id) + '">' + escapeHtml((s.title || s.id).substring(0, 40)) + '</td>' +
+      '<td><span class="model-badge">' + modelShort(s.model) + '</span></td>' +
+      '<td>' + (s.message_count || s.messages ? (s.message_count || s.messages) : '—') + '</td>' +
+      '<td class="cost">' + fmtCost(s.cost) + '</td>' +
+      '<td>' + fmtDur(s.duration_seconds) + '</td>' +
+      '<td><span class="stuck-badge">Stuck</span></td></tr>';
+  }).join('');
+  document.getElementById('stuckBody').innerHTML = html;
+}
+
+function renderLongestSessions(data) {
+  if (!data || data.length === 0) return;
+  var html = data.map(function(s) {
+    return '<tr>' +
+      '<td class="session-id" title="' + (s.title || s.id) + '">' + escapeHtml((s.title || s.id).substring(0, 40)) + '</td>' +
+      '<td><span class="model-badge">' + modelShort(s.model) + '</span></td>' +
+      '<td>' + (s.message_count || s.messages || '—') + '</td>' +
+      '<td class="tokens">' + fmtTok(s.input_tokens) + '</td>' +
+      '<td class="tokens">' + fmtTok(s.output_tokens) + '</td>' +
+      '<td>' + fmtDur(s.duration_seconds) + '</td>' +
+      '<td class="cost">' + fmtCost(s.cost) + '</td>' +
+      '<td>' + escapeHtml(s.end_reason || '—') + '</td></tr>';
+  }).join('');
+  document.getElementById('longestBody').innerHTML = html;
+}
+
+// ─── Load Dashboard ────────────────────────────────────────────────
 function loadDashboard() {
   Promise.all([
     fetchJSON('/api/overview?days=' + days),
@@ -367,14 +631,12 @@ function loadDashboard() {
 
     document.getElementById('updated').textContent = 'Updated ' + new Date(overview.last_updated).toLocaleTimeString();
 
-    // Empty state
     if (overview.total_sessions === 0) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('emptyState').style.display = '';
       return;
     }
 
-    // Hero cards
     var cls = overview.cost_delta_pct > 0 ? 'up' : overview.cost_delta_pct < 0 ? 'down' : 'neutral';
     var txt = overview.cost_delta_pct === 0 && overview.prev_period_cost === 0
       ? 'No previous data'
@@ -388,13 +650,10 @@ function loadDashboard() {
       '<div class="card"><div class="card-label">Total Tokens</div><div class="card-value">' + fmtTok(overview.total_tokens) + '</div><div class="card-delta neutral">' + fmtTok(overview.total_output_tokens) + ' output</div></div>' +
       '<div class="card"><div class="card-label">Avg Cost / Session</div><div class="card-value">' + fmtCost(overview.avg_cost_per_session) + '</div><div class="card-delta neutral">' + overview.models.length + ' model' + (overview.models.length !== 1 ? 's' : '') + '</div></div>';
 
-    // Charts
     renderDailyChart(daily);
     renderModelChart(models);
     renderSourceChart(sources);
     renderTokenChart(models);
-
-    // Tables
     renderTable(sessions.sessions);
     renderExpensive(expensive);
 
@@ -409,7 +668,103 @@ function loadDashboard() {
   });
 }
 
-// ─── Init ───────────────────────────────────────────────────────────────────
+// ─── Load Efficiency ───────────────────────────────────────────────
+var apiEfficiency = null;
+function loadEfficiency() {
+  effLoaded = 'loading';
+  fetchJSON('/api/efficiency').then(function(data) {
+    apiEfficiency = data;
+    var s = data.summary || {};
+
+    // Summary cards
+    document.getElementById('effCards').innerHTML =
+      '<div class="card"><div class="card-label">Avg Cost / Message</div><div class="card-value">' + fmtCost(s.avg_cost_per_message || 0) + '</div><div class="card-delta neutral">per request</div></div>' +
+      '<div class="card"><div class="card-label">Inefficient Sessions</div><div class="card-value">' + (s.total_inefficient_sessions || 0) + '</div><div class="card-delta ' + ((s.total_inefficient_sessions || 0) > 5 ? 'up' : 'neutral') + '">wasteful work detected</div></div>' +
+      '<div class="card"><div class="card-label">Stuck Sessions</div><div class="card-value">' + (s.total_stuck_sessions || 0) + '</div><div class="card-delta up">looping or errored</div></div>' +
+      '<div class="card"><div class="card-label">Cache Hit Rate</div><div class="card-value">' + fmtPct(s.cache_hit_rate) + '</div><div class="card-delta ' + ((s.cache_hit_rate || 0) > 0.3 ? 'down' : 'neutral') + '">read cache reuse</div></div>';
+
+    // Cache chart
+    if (data.cache_inefficiency && data.cache_inefficiency.length > 0) {
+      renderCacheChart(data.cache_inefficiency);
+    }
+
+    // Tables
+    renderInefficient(data.inefficient_sessions || []);
+    renderStuck(data.stuck_sessions || []);
+
+    document.getElementById('effLoading').style.display = 'none';
+    document.getElementById('efficiency').style.display = '';
+    if (!(data.inefficient_sessions && data.inefficient_sessions.length) && !(data.stuck_sessions && data.stuck_sessions.length)) {
+      document.getElementById('efficiency').style.display = 'none';
+      document.getElementById('effEmpty').style.display = '';
+    }
+    effLoaded = true;
+  }).catch(function(err) {
+    document.getElementById('effLoading').innerHTML =
+      '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+      '<p>Couldn\u2019t load efficiency data.</p>' +
+      '<p><small>' + escapeHtml(err.message) + '</small></p></div>';
+    effLoaded = false;
+    console.error('Efficiency load error:', err);
+  });
+}
+
+// ─── Load Context ──────────────────────────────────────────────────
+var apiContext = null;
+function loadContext() {
+  ctxLoaded = 'loading';
+  fetchJSON('/api/context').then(function(data) {
+    apiContext = data;
+
+    var pressureByModel = data.context_pressure_by_model || [];
+
+    // Summary cards
+    var maxMsgModel = pressureByModel.length > 0 ? pressureByModel.sort(function(a, b) { return (b.avg_messages_per_session || 0) - (a.avg_messages_per_session || 0); })[0] : null;
+    document.getElementById('ctxCards').innerHTML =
+      '<div class="card"><div class="card-label">Compression Events</div><div class="card-value">' + (data.compression_events || 0) + '</div><div class="card-delta neutral">contexts compressed</div></div>' +
+      '<div class="card"><div class="card-label">Context Resets</div><div class="card-value">' + (data.reset_events || 0) + '</div><div class="card-delta neutral">contexts reset</div></div>' +
+      '<div class="card"><div class="card-label">Sessions under Pressure</div><div class="card-value">' + (data.sessions_with_context_pressure || 0) + '</div><div class="card-delta ' + ((data.sessions_with_context_pressure || 0) > 3 ? 'up' : 'neutral') + '">high message count</div></div>' +
+      '<div class="card"><div class="card-label">' + (maxMsgModel ? modelShort(maxMsgModel.model) : 'N/A') + '</div><div class="card-value">' + (maxMsgModel ? maxMsgModel.avg_messages_per_session.toFixed(1) : '—') + '</div><div class="card-delta neutral">avg msgs/session</div></div>';
+
+    // Message distribution chart
+    if (data.message_count_distribution && data.message_count_distribution.length > 0) {
+      renderMsgDistChart(data.message_count_distribution);
+    }
+
+    // Pressure by model
+    if (pressureByModel.length > 0) {
+      renderPressureChart(pressureByModel);
+    }
+
+    // End reasons
+    if (data.end_reason_distribution && data.end_reason_distribution.length > 0) {
+      renderEndReasonChart(data.end_reason_distribution);
+    }
+
+    // Longest sessions
+    if (data.longest_sessions && data.longest_sessions.length > 0) {
+      renderLongestSessions(data.longest_sessions);
+    }
+
+    document.getElementById('ctxLoading').style.display = 'none';
+    document.getElementById('contextPage').style.display = '';
+    if (!data.compression_events && !data.reset_events && !data.sessions_with_context_pressure) {
+      document.getElementById('ctxLoading').style.display = 'none';
+      document.getElementById('contextPage').style.display = 'none';
+      document.getElementById('ctxEmpty').style.display = '';
+    }
+    ctxLoaded = true;
+  }).catch(function(err) {
+    document.getElementById('ctxLoading').innerHTML =
+      '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+      '<p>Couldn\u2019t load context data.</p>' +
+      '<p><small>' + escapeHtml(err.message) + '</small></p></div>';
+    ctxLoaded = false;
+    console.error('Context load error:', err);
+  });
+}
+
+// ─── Init ──────────────────────────────────────────────────────────
 document.querySelectorAll('#dateRange button').forEach(function(btn) {
   btn.addEventListener('click', function() {
     document.querySelectorAll('#dateRange button').forEach(function(b) { b.classList.remove('active'); });
